@@ -1,5 +1,6 @@
 
 import pygame
+from pygame.sprite import Sprite
 
 from dino_runner.utils.constants import DUCKING, RUNNING, JUMPING
 
@@ -8,7 +9,7 @@ Y_POS = 310
 JUMP_VEL = 8.5
 Y_POS_DUCK = 340
 
-class Dinosaur:
+class Dinosaur(Sprite):
     def __init__(self):
         self.image = RUNNING[0]
 
@@ -50,6 +51,7 @@ class Dinosaur:
             self.dino_jump = False
             self.dino_run = True
 
+# tentei mudar o if por elif, no código pra diminuir mas ai não agachava.
         if user_input[pygame.K_DOWN]:
             self.dino_duck = True
             self.dino_run = False
@@ -80,10 +82,9 @@ class Dinosaur:
              self.image = DUCKING[1]
 
         self.step_index += 1
-
-        if self.dino_duck:
-            self.dino_rect.x = X_POS
-            self.dino_rect.y = Y_POS_DUCK
+       
+        self.dino_rect.x = X_POS
+        self.dino_rect.y = Y_POS_DUCK
           
         
     def draw(self, screen):
