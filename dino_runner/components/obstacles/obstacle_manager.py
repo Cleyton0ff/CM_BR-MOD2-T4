@@ -13,13 +13,13 @@ class ObstacleManager:
     def update(self, game):
         if len(self.obstacles) == 0:
 
-            obs_type = random.randint(0, 2)
+            obs_type_index = random.randint(0, 2)
 
-            if obs_type == 0:
+            if obs_type_index == 0:
                 self.obstacles.append(Cactus(SMALL_CACTUS))
-            elif obs_type == 1:
+            elif obs_type_index == 1:
                 self.obstacles.append(LargeCactus(LARGE_CACTUS))
-            elif obs_type == 2:
+            elif obs_type_index == 2:
                 self.obstacles.append(Bird(BIRD))
                 
         # if len(self.obstacles) == 0:
@@ -37,6 +37,7 @@ class ObstacleManager:
             #manege the collision
             if game.player.dino_rect.colliderect(obstacle.rect):
                 game.playing = False
+                game.count_death += 1
                 pygame.time.delay(500)
                 break
 
@@ -44,6 +45,9 @@ class ObstacleManager:
     def draw(self, screen):
         for obstacle in self.obstacles:
             obstacle.draw(screen)
+
+    def reset_obstacles(self):
+        self.obstacles = []
     
 
 
