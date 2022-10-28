@@ -5,6 +5,8 @@ from dino_runner.utils.constants import BG, DEAD, ICON, SCREEN_HEIGHT, SCREEN_WI
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+from dino_runner.components.cloud import Cloud
+
 
 class Game:
     def __init__(self):
@@ -16,7 +18,7 @@ class Game:
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
         self.power_up_manager = PowerUpManager()
-
+        self.cloud = Cloud()
         self.count_death = 0
         self.score = 0
         self.clock = pygame.time.Clock()
@@ -33,25 +35,47 @@ class Game:
             self.events()
             self.update()
             self.draw()
-        # pygame.quit()
+       
 
     def execute(self):
         self.executing = True
 
-        while(self.executing): 
-            
-            self.display_menu()
-
-            # if not self.playing:
-                # self.reset()
+        while(self.executing):          
+            self.display_menu()      
 
         pygame.display.quit()
         pygame.quit()
 
-   
+    def draw_power_up_time(self):
+        if self.player.has_power_up:
+            time_to_show = round((self.player.power_up_time - pygame.time.get_ticks())/1000,2)
+           
+            if time_to_show >=0:
+                self.draw_time_to_screen(time_to_show)
+                
+            else:
+                self.player.has_power_up = False
+                self.player.type = DEFAULT_TYPE
+    
+    
+    def draw_time_to_screen(self, time_to_show):
+        
+        font_size = 15
+        color = (0,0,0)
+        FONT = 'freesansbold.ttf'
+        font = pygame.font.Font(FONT, font_size)
+        
+        text_to_display = f"Power up remaining time: {time_to_show}"
+               
+        text = font.render(text_to_display,True, color)
+        text_rect = text.get_rect()
+        
+        text_rect.x = 70
+        text_rect.y = 100
+        self.screen.blit(text, (text_rect.x, text_rect.y))
 
     def display_menu(self):
-        # print("Displaying menu")
+       
         self.screen.fill((255,255,255))
 
         font_size = 32
@@ -63,9 +87,6 @@ class Game:
             text_to_display = "Press any key to start"
             text = font.render(text_to_display, True, color)
             menu_text_rect = text.get_rect()
-            # text_to_display = "Press any key to start again"
-            # text = font.render(text_to_display, True, color)
-            # menu_text_rect = text.get_rect()
 
             menu_text_rect.x = (SCREEN_WIDTH //2) - (menu_text_rect.width//2)
             menu_text_rect.y = (SCREEN_HEIGHT //2) - (menu_text_rect.height//2)
@@ -173,9 +194,13 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
+        self.cloud.update(self.game_speed)
+        self.cloud.draw(self.screen)
 
         #draw score
         self.draw_score()
+
+        self.draw_power_up_time()
        
         pygame.display.update()
         pygame.display.flip()
